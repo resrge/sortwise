@@ -69,29 +69,6 @@ Names are matched after ignoring dates, version numbers, `(1)` / `copy` / `final
 
 SortWise checks for updates 8 seconds after it starts and every 6 hours after that (installed builds only). It looks at the latest release on **github.com/resrge/sortwise** first, then **https://resrge.com/sortwise/latest.json**. It downloads the new installer in the background and checks its SHA-256. Then **Restart to update** appears in the title bar. Clicking it runs the installer silently (Windows asks for admin once), and SortWise reopens when the install finishes.
 
-### Shipping a release
-
-1. Bump `version` in `package.json`.
-2. Run `.\build-installer.ps1 -Publish -Notes "What's new"`. This needs the [GitHub CLI](https://cli.github.com) and `gh auth login`. Without `-Publish`, create release `v<version>` on GitHub yourself and attach the two files below.
-3. Upload `installer\Output\SortWise-Setup-<version>-build<date>.exe` and `installer\Output\latest.json` to `resrge.com/sortwise/`.
-
-A rebuild of the same version with a newer build date also counts as an update.
-
-## Layout
-
-```
-main.js              Electron main process: IPC, settings, history, tray, auto-organize
-preload.js           Safe bridge exposed as window.sortwise
-src/organizer.js     Scan / group / plan / move / undo (pure Node)
-src/watcher.js       Folder watcher that waits for downloads to finish (pure Node)
-src/updater.js       GitHub + resrge.com update check, download, silent install
-src/version.js       Version / build comparison
-renderer/            index.html, styles.css, app.js
-scripts/             Exe icon + version stamping (rcedit)
-installer/           Inno Setup script
-test/                Logic + watcher tests
-assets/icon.png
-```
 
 ## Adding a category
 
