@@ -1,0 +1,31 @@
+{
+  "name": "sortwise",
+  "productName": "SortWise",
+  "version": "0.2.0",
+  "buildStamp": "20261017",
+  "description": "Organize a messy folder (like Downloads) by file type and similar names, with preview and undo.",
+  "main": "main.js",
+  "author": "Jeremy",
+  "license": "MIT",
+  "updates": {
+    "owner": "resrge",
+    "repo": "sortwise",
+    "mirror": "https://resrge.com/sortwise/latest.json"
+  },
+  "scripts": {
+    "start": "electron .",
+    "test": "node test/organizer.test.js",
+    "pack": "electron-builder --win --x64 --dir && node scripts/set-exe-info.js"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8",
+    "rcedit": "^4.0.1"
+  },
+  "build": {
+    "appId": "com.resrge.sortwise",
+    "productName": "SortWise",
+    "files": ["main.js", "preload.js", "src/**", "renderer/**", "assets/**", "package.json"],
+    "win": { "target": "dir", "icon": "assets/icon.ico", "signAndEditExecutable": false }
+  }
+}

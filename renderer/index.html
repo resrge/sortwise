@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;" />
+  <title>SortWise</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="titlebar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h4l2 2h7A2.5 2.5 0 0 1 21 9.5v8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><path class="logo-lines" d="M8 12h8M8 15.5h5"/></svg>
+      </span>
+      <span class="brand-name">SortWise</span>
+    </div>
+    <button class="watch-pill" id="watchPill" hidden title="Watching for new files — click to change">
+      <span class="dot"></span><span id="watchPillText">Watching</span>
+    </button>
+    <button class="update-pill" id="updatePill" hidden>
+      <svg viewBox="0 0 24 24"><path d="M12 4v11m-4.5-4.5L12 15l4.5-4.5M5 19.5h14"/></svg>
+      <span id="updatePillText">Restart to update</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <!-- ========== Sidebar ========== -->
+    <aside class="sidebar">
+      <section class="block">
+        <div class="label">Folder to tidy</div>
+        <button class="folder-card" id="sourceBtn" title="Choose the folder to organize">
+          <span class="fc-icon src"></span>
+          <span class="fc-text">
+            <span class="fc-name" id="sourceName">Choose a folder</span>
+            <span class="fc-path" id="sourcePath">—</span>
+          </span>
+          <span class="fc-change">Change</span>
+        </button>
+      </section>
+
+      <section class="block">
+        <div class="label">Move files into</div>
+        <button class="folder-card" id="destBtn" title="Choose where organized folders go">
+          <span class="fc-icon dst"></span>
+          <span class="fc-text">
+            <span class="fc-name" id="destName">Choose a folder</span>
+            <span class="fc-path" id="destPath">—</span>
+          </span>
+          <span class="fc-change">Change</span>
+        </button>
+        <button class="link-btn" id="destInside">Use an “Organized” folder inside the source</button>
+      </section>
+
+      <section class="block">
+        <div class="label">Sort by</div>
+        <div class="segmented" id="modeSeg" role="radiogroup">
+          <button data-mode="category" role="radio">File type</button>
+          <button data-mode="extension" role="radio">Extension</button>
+          <button data-mode="similar" role="radio">Similar names</button>
+        </div>
+        <p class="hint" id="modeHint"></p>
+      </section>
+
+      <section class="block options">
+        <label class="toggle" id="similarToggleRow">
+          <input type="checkbox" id="groupSimilar" />
+          <span class="switch"></span>
+          <span class="t-text">
+            <span>Group similar names</span>
+            <small>Puts “invoice_03.pdf” and “Invoice (2).pdf” together</small>
+          </span>
+        </label>
+
+        <div class="stepper-row">
+          <span class="t-text">
+            <span>Files needed for a group</span>
+            <small>Smaller sets stay in the type folder</small>
+          </span>
+          <div class="stepper">
+            <button id="minDown" aria-label="Fewer">−</button>
+            <span id="minVal">2</span>
+            <button id="minUp" aria-label="More">+</button>
+          </div>
+        </div>
+
+        <label class="toggle">
+          <input type="checkbox" id="includeHidden" />
+          <span class="switch"></span>
+          <span class="t-text">
+            <span>Include hidden files</span>
+            <small>Files starting with a dot</small>
+          </span>
+        </label>
+      </section>
+
+      <button class="btn primary big" id="scanBtn">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>
+        Scan &amp; preview
+      </button>
+
+      <section class="block options">
+        <div class="label">Automation</div>
+        <label class="toggle">
+          <input type="checkbox" id="watch" />
+          <span class="switch"></span>
+          <span class="t-text">
+            <span>Watch this folder</span>
+            <small>Spots new files as they arrive and keeps running in the tray</small>
+          </span>
+        </label>
+        <label class="toggle">
+          <input type="checkbox" id="autoClean" />
+          <span class="switch"></span>
+          <span class="t-text">
+            <span>Auto-organize new files</span>
+            <small>Moves each new download once it finishes, using the settings above</small>
+          </span>
+        </label>
+        <label class="toggle">
+          <input type="checkbox" id="openAfter" />
+          <span class="switch"></span>
+          <span class="t-text">
+            <span>Open folder after organizing</span>
+            <small>Shows the moved files in Explorer when you click Organize</small>
+          </span>
+        </label>
+        <label class="toggle" id="startRow">
+          <input type="checkbox" id="startWithWindows" />
+          <span class="switch"></span>
+          <span class="t-text">
+            <span>Start with Windows</span>
+            <small>Starts quietly in the tray when you sign in</small>
+          </span>
+        </label>
+      </section>
+
+      <div class="sidebar-foot">
+        <div class="foot-row">
+          <button class="ghost-btn" id="historyBtn">
+            <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/><path d="M12 8v4l3 2"/></svg>
+            History &amp; undo
+          </button>
+          <button class="ghost-btn" id="openDestBtn" title="Open the organized folder">
+            <svg viewBox="0 0 24 24"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h3.5l2 2h5.5A2.5 2.5 0 0 1 20 9.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5z"/></svg>
+            Open folder
+          </button>
+        </div>
+        <div class="update-box" id="updateBox">
+          <div class="ub-text">
+            <span class="version" id="version"></span>
+            <span class="ub-status" id="updateStatus"></span>
+          </div>
+          <button class="link-btn" id="updateAction">Check for updates</button>
+          <div class="ub-bar" id="updateBar" hidden><div id="updateFill"></div></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ========== Main ========== -->
+    <main class="content">
+      <div class="toolbar" id="toolbar" hidden>
+        <div class="stats" id="stats"></div>
+        <div class="tools">
+          <div class="search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>
+            <input id="filter" type="search" placeholder="Filter files…" />
+          </div>
+          <button class="ghost-btn sm" id="expandAll">Expand all</button>
+          <button class="ghost-btn sm" id="selectAll">Select all</button>
+          <button class="ghost-btn sm" id="selectNone">Select none</button>
+        </div>
+      </div>
+
+      <div class="empty" id="empty">
+        <div class="empty-art" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <h1>Tidy up any folder in seconds</h1>
+        <p>Pick a messy folder like Downloads, choose where things should go, then scan.
+          You’ll see exactly where every file will land before anything moves — and you can undo any run.</p>
+        <button class="btn primary" id="emptyScan">Scan Downloads</button>
+      </div>
+
+      <div class="groups" id="groups"></div>
+
+      <footer class="actionbar" id="actionbar" hidden>
+        <div class="ab-text">
+          <strong id="selCount">0 files</strong>
+          <span id="selDest"></span>
+        </div>
+        <div class="ab-actions">
+        <button class="ghost-btn" id="abOpenBtn" title="Open the organized folder">
+          <svg viewBox="0 0 24 24"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h3.5l2 2h5.5A2.5 2.5 0 0 1 20 9.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5z"/></svg>
+          Open folder
+        </button>
+        <button class="btn primary" id="goBtn">
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          Organize
+        </button>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- History drawer -->
+  <div class="scrim" id="scrim" hidden></div>
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer-head">
+      <h2>History</h2>
+      <button class="icon-btn" id="drawerClose" aria-label="Close">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <p class="hint pad">Each run can be undone. Files go back to where they were, and empty folders are cleaned up.</p>
+    <div class="history-list" id="historyList"></div>
+    <div class="drawer-foot">
+      <button class="link-btn danger" id="clearHistory">Clear history</button>
+    </div>
+  </aside>
+
+  <!-- Progress overlay -->
+  <div class="progress-overlay" id="progress" hidden>
+    <div class="progress-card">
+      <div class="p-title" id="pTitle">Moving files…</div>
+      <div class="p-bar"><div id="pFill"></div></div>
+      <div class="p-count" id="pCount">0 / 0</div>
+    </div>
+  </div>
+
+  <div class="toasts" id="toasts"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
